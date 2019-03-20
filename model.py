@@ -64,11 +64,18 @@ class VDSR(object):
     def train(self, config):
         
         # NOTE : if train, the nx, ny are ingnored
+        print "creating dataset"
         nx, ny = input_setup(config)
 
         data_dir = checkpoint_dir(config)
         
+        print "reading data"
         input_, label_ = read_data(data_dir)
+        
+        #for tensorboard
+#        train_writer = tf.summary.FileWriter(os.path.join(config.log_dir, 'train'),
+#                                  self.sess.graph)
+#        test_writer = tf.summary.FileWriter(os.path.join(config.log_dir, 'test'))
 
         # Stochastic gradient descent with the standard backpropagation
 
@@ -101,8 +108,9 @@ class VDSR(object):
                     batch_images = input_[idx * config.batch_size : (idx + 1) * config.batch_size]
                     batch_labels = label_[idx * config.batch_size : (idx + 1) * config.batch_size]
                     counter += 1
+#                   summary, step, _, loss_val, pred_val
                     _, err = self.sess.run([self.train_op, self.loss], feed_dict={self.images: batch_images, self.labels: batch_labels})
-
+#                    train_writer.add_summary(err)
                     if counter % 10 == 0:
                         print("Epoch: [%2d], step: [%2d], time: [%4.4f], loss: [%.8f]" % ((ep+1), counter, time.time()-time_, err ))
                     if counter % 500 == 0:
@@ -111,11 +119,13 @@ class VDSR(object):
         else:
             print("Now Start Testing...")
             
-            result = self.pred.eval({self.images: input_}) + input_
-            image = merge(result, [nx, ny], self.c_dim)
-            checkimage(merge(result, [nx, ny], self.c_dim))
-            #checkimage(image_LR)
-            imsave(image, config.result_dir+'/result.png', config)
+            
+#            
+#            result = self.pred.eval({self.images: input_}) + input_
+#            image = merge(result, [nx, ny], self.c_dim)
+#            checkimage(merge(result, [nx, ny], self.c_dim))
+#            #checkimage(image_LR)
+#            imsave(image, config.result_dir+'/result.png', config)
 
     def load(self, checkpoint_dir):
         """
