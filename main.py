@@ -17,6 +17,7 @@ flags.DEFINE_string("result_dir", "result", "Name of result directory")
 flags.DEFINE_string("test_img", "", "test_img")
 flags.DEFINE_float("clip_grad", 1e-1 , "The clip gradient number")
 flags.DEFINE_integer("layer", 20, "the size of layer")
+flags.DEFINE_string("log_dir", "log", "Name of logging directory")
 
 
 
