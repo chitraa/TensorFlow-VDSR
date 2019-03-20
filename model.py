@@ -7,7 +7,7 @@ from utils import (
     input_setup,
     checkpoint_dir,
     read_data,
-    merge,
+    #merge,
     checkimage,
     imsave
 )
