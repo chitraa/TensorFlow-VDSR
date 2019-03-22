@@ -7,7 +7,6 @@ import h5py
 
 # Get the Image
 def imread(path):
-    print path
     img = cv2.imread(path, 0) #grayscale
     img = img/255. #normalize so that values lie between 0 and 1
     img = np.expand_dims(img, axis=2) #(48, 48) -> (48, 48, 1)
@@ -34,11 +33,13 @@ def checkpoint_dir(config):
         return os.path.join('./{}'.format(config.checkpoint_dir), "test.h5")
 
 def load_data(config, test_img):
+
     input_images_filepaths, label_images_filepaths, test_result_images_filepaths = load_data_paths(config, test_img)
-    make_data_hf_all(test_result_images_filepaths, config)
+#    make_data_hf_all(test_result_images_filepaths, config)
     for times in range(len(input_images_filepaths)):
         make_data_hf(imread(input_images_filepaths[times]), imread(label_images_filepaths[times]), config, times)
     return test_result_images_filepaths
+
 
 def load_data_paths(config, test_img):
     #TODO test_img if not "", set as test path
@@ -53,7 +54,9 @@ def load_data_paths(config, test_img):
      
     pwd_parent = os.path.abspath('..')
     data_file_dir = pwd_parent + "/point-networks/mesh_denoising/mesh_denoising_data/" 
-    data_type_dirs = ["Kinect_Fusion","Kinect_v1", "Kinect_v2"]# "Synthetic"]
+
+    data_type_dirs = ["Kinect_Fusion", "Kinect_v1"]#, "Kinect_v2"], "Synthetic"]
+
     
     for data_type_dir in data_type_dirs:
         image_files_dir = os.path.join(data_file_dir, data_type_dir, dataset_type)
@@ -67,7 +70,9 @@ def load_data_paths(config, test_img):
 
     return input_images_filepaths, label_images_filepaths, test_result_images_filepaths
 
-def read_data(path, config):
+
+
+def read_data(path):
     """
         Read h5 format data file
 
@@ -80,9 +85,6 @@ def read_data(path, config):
         input_ = np.array(hf.get('input'))
         label_ = np.array(hf.get('label'))
         return input_, label_
-
-    
-
     
     
 #https://github.com/hengchuan/RDN-TensorFlow/blob/master/utils.py
@@ -125,22 +127,6 @@ def make_data_hf(input_, label_, config, times):
     hf.close()
     return True
 
-def make_data_hf_all(test_result_images_filepaths, config):
-    """
-        Make input data as h5 file format
-        Depending on "is_train" (flag value), savepath would be change.
-    """
-    # Check the check dir, if not, create one
-    if not os.path.isdir(os.path.join(os.getcwd(),config.checkpoint_dir)):
-        os.makedirs(os.path.join(os.getcwd(),config.checkpoint_dir))
-
-#    if not config.is_train:
-#        savepath = os.path.join(os.getcwd(), config.checkpoint_dir + '/test_paths.h5')
-#
-#        with h5py.File(savepath, 'w') as hf:
-#            #checkimage(input_[1])
-#            hf.create_dataset('test_output_paths', data=test_result_images_filepaths)
-            
 #def merge(images, size, c_dim):
 #    """
 #        images is the sub image set, merge it
@@ -162,6 +148,7 @@ def input_setup(config):
         Read image files and save them in a h5 file format
     """
     # Load data path, if is_train False, get test data
+
     test_result_images_filepaths = load_data(config, config.test_img)
     return test_result_images_filepaths
     
